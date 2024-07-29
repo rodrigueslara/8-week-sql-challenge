@@ -5,4 +5,4 @@ It shows my journey with SQL: from simple queries to more advanced and complex o
 A special thanks to Danny Ma for creating this incredible challenge.
 
 * Solutions in PostgreSQL
-* Queries executed in [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138). 
+* Queries executed using [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138). 
