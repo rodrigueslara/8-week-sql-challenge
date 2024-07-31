@@ -22,3 +22,24 @@ ORDER BY customer_id
 | A           | 76           |
 | B           | 74           |
 | C           | 36           |
+
+
+## 2. How many days has each customer visited the restaurant?
+
+* Use **COUNT** with **DISTINCT** to calculate the number of unique days the restaurant was visited.
+* **GROUP BY** to group by customer.
+
+```sql
+SELECT
+  customer_id,
+  COUNT(DISTINCT order_date) AS days_visited
+FROM dannys_diner.sales
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+| customer_id | days_visited |
+| ----------- | ------------ |
+| A           | 4            |
+| B           | 6            |
+| C           | 2            |
