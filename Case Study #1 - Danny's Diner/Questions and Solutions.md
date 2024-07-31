@@ -61,8 +61,8 @@ WITH helper AS(
     product_name,
     DENSE_RANK() OVER(
       PARTITION BY customer_id
-      ORDER BY order_date)
-    AS order_rank
+      ORDER BY order_date
+    )AS order_rank
   FROM dannys_diner.sales
   JOIN dannys_diner.menu USING (product_id)
 )
@@ -101,6 +101,47 @@ ORDER BY times_purchased DESC
 LIMIT 1
 ```
 
+### Answer
+
 | product_name | times_purchased |
 | ------------ | --------------- |
 | ramen        | 8               |
+
+  
+## 5. Which item was the most popular for each customer?
+
+* In `popular`, group results by customer and product.
+* Use **DENSE_RANK** and **PARTITION** ordered by `COUNT(product_name)` to get a new column identifying products' popularity.
+* In the outer query, use **WHERE** to get the most popular items for each customer.
+* Use **STRING_AGG** to make the table easier to read.
+
+```sql
+WITH popular AS(
+  SELECT
+    customer_id,
+    product_name,
+    DENSE_RANK() OVER(
+      PARTITION BY customer_id
+      ORDER BY COUNT(product_name) DESC
+    )AS order_rank
+  FROM dannys_diner.sales
+  JOIN dannys_diner.menu USING(product_id)
+  GROUP BY customer_id, product_name
+)
+
+SELECT
+  customer_id,
+  STRING_AGG(product_name,', ') AS most_popular
+FROM popular
+WHERE order_rank = 1
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | most_popular        |
+| ----------- | ------------------- |
+| A           | ramen               |
+| B           | ramen, curry, sushi |
+| C           | ramen               |
