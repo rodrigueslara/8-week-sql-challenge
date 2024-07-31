@@ -23,7 +23,7 @@ ORDER BY customer_id
 | B           | 74           |
 | C           | 36           |
 
-
+  
 ## 2. How many days has each customer visited the restaurant?
 
 * Use **COUNT** with **DISTINCT** to calculate the number of unique days the restaurant was visited.
@@ -46,7 +46,7 @@ ORDER BY customer_id
 | B           | 6            |
 | C           | 2            |
 
-
+  
 ## 3. What was the first item from the menu purchased by each customer?
 
 * In the CTE, create a new column using **DENSE_RANK** and **PARTITION** ordered by order_date.
@@ -83,3 +83,24 @@ ORDER BY customer_id
 | A           | curry, sushi |
 | B           | curry        |
 | C           | ramen        |
+
+  
+## 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+* Use **COUNT** and **GROUP BY** to count the amount of times a product was purchased.
+* Order by the number of times purchased. Since we are only interested in the most purchased item, use **LIMIT**.
+
+```sql
+SELECT
+  product_name,
+  COUNT(product_name) AS times_purchased
+FROM dannys_diner.sales
+JOIN dannys_diner.menu USING(product_id)
+GROUP BY product_name
+ORDER BY times_purchased DESC
+LIMIT 1
+```
+
+| product_name | times_purchased |
+| ------------ | --------------- |
+| ramen        | 8               |
