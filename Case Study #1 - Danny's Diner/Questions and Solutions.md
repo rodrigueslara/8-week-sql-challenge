@@ -145,3 +145,42 @@ ORDER BY customer_id
 | A           | ramen               |
 | B           | ramen, curry, sushi |
 | C           | ramen               |
+
+
+## 6. Which item was purchased first by the customer after they became a member?
+
+* You need information from all tables, so join those in `ranked`.
+* Use **DENSE_RANK** and **WHERE** to identify the rows where the customer is already a member, ordered by the order date.
+* In the outer query, use **WHERE** since we are only interested in the first order after the customer becomes a member.
+  * We will assume that, for rows where the order date is the same as the member join date, the customer became a member after ordering.
+* Had the customers ordered more than one product for their first purchase, note that we would have used **STRING_AGG** and **GROUP BY**, similar to the last question, to make the table easier to read.
+
+```sql
+WITH ranked AS(
+  SELECT
+    customer_id,
+    product_name,
+    DENSE_RANK() OVER(
+      PARTITION BY customer_id
+      ORDER BY order_date
+    ) AS rank_order
+  FROM dannys_diner.sales
+  JOIN dannys_diner.menu USING(product_id)
+  JOIN dannys_diner.members USING(customer_id)
+  WHERE join_date < order_date
+)
+
+SELECT
+  customer_id,
+  product_name
+FROM ranked
+WHERE rank_order = 1
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | product_name |
+| ----------- | ------------ |
+| A           | ramen        |
+| B           | sushi        |
