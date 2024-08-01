@@ -184,3 +184,42 @@ ORDER BY customer_id
 | ----------- | ------------ |
 | A           | ramen        |
 | B           | sushi        |
+
+## 7. Which item was purchased just before the customer became a member?
+
+* You need information from all tables, so in `ranked`, join them.
+* Use **DENSE_RANK** and **WHERE** to identify the rows where the customer is not a member, ordered by the order date, descending.
+* In the outer query, use **WHERE** since we are only interested in the last order before the customer becomes a member.
+  * We will not count purchases made on the same day as the joining date.
+* Use **STRING_AGG** and **GROUP BY** to make the table easier to read.
+ 
+```sql
+WITH ranked AS(
+  SELECT
+    customer_id,
+    product_name,
+    DENSE_RANK() OVER(
+      PARTITION BY customer_id
+      ORDER BY order_date DESC
+    ) AS rank_order
+  FROM dannys_diner.sales
+  JOIN dannys_diner.menu USING(product_id)
+  JOIN dannys_diner.members USING(customer_id)
+  WHERE join_date > order_date
+)
+
+SELECT
+  customer_id,
+  STRING_AGG(product_name,', ') AS purchased_before_member
+FROM ranked
+WHERE rank_order = 1
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | purchased_before_member |
+| ----------- | ----------------------- |
+| A           | sushi, curry            |
+| B           | sushi                   |
