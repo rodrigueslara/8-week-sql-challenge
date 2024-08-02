@@ -62,7 +62,7 @@ WITH helper AS(
     DENSE_RANK() OVER(
       PARTITION BY customer_id
       ORDER BY order_date
-    )AS order_rank
+    ) AS order_rank
   FROM dannys_diner.sales
   JOIN dannys_diner.menu USING (product_id)
 )
@@ -123,7 +123,7 @@ WITH popular AS(
     DENSE_RANK() OVER(
       PARTITION BY customer_id
       ORDER BY COUNT(product_name) DESC
-    )AS order_rank
+    ) AS order_rank
   FROM dannys_diner.sales
   JOIN dannys_diner.menu USING(product_id)
   GROUP BY customer_id, product_name
@@ -225,7 +225,7 @@ ORDER BY customer_id
 | B           | sushi                   |
 
   
-# 8. What is the total items and amount spent for each member before they became a member?
+## 8. What is the total items and amount spent for each member before they became a member?
 
 * You need information from all tables, so join them.
 * Use **WHERE** since we are only interested in purchases made before customers A and B became members.
@@ -246,7 +246,38 @@ GROUP BY customer_id
 ORDER BY customer_id
 ```
 
+### Answer
+
 | customer_id | n_items | spent_before_member |
 | ----------- | ------- | ------------------- |
 | A           | 2       | 25                  |
 | B           | 3       | 40                  |
+
+ 
+## 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+
+* You need `menu` for the prices, so we will join the table.
+* With **CASE**, create a new column: if the customer bought sushi, then the points for that purchase is `2 * 10 * price`. For everything else, it's `10 * price`.
+* Use **SUM** to add the points earned and **GROUP BY** to group by customer.
+
+```sql
+SELECT customer_id,
+  SUM(
+    CASE
+      WHEN product_name = 'sushi' THEN 20*price
+      ELSE 10*price
+    END
+  ) AS points
+FROM dannys_diner.sales
+JOIN dannys_diner.menu USING(product_id)
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | points |
+| ----------- | ------ |
+| A           | 860    |
+| B           | 940    |
+| C           | 360    |
