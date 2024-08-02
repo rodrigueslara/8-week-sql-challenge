@@ -3,7 +3,10 @@
 <p align="center">
 <img src="https://8weeksqlchallenge.com/images/case-study-designs/1.png" width=50% height=50%>
 
-Case Study [Source](https://8weeksqlchallenge.com/case-study-1/)
+Case Study [Source](https://8weeksqlchallenge.com/case-study-1/).
+Solutions can be found [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Questions%20and%20Solutions.md).
+
+---
 
 ## Introduction
 
