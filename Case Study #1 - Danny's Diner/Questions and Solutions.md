@@ -333,7 +333,61 @@ ORDER BY customer_id
 
 ---
 
-## Bonus Question #1 - Join all things
+## Bonus Questions - Join and rank all things
 
 Recreate the following table:
 
+| customer_id | order_date | product_name | price | member_status | ranking |
+| ----------- | ---------- | ------------ | ----- | ------------- | ------- |
+| A           | 2021-01-01 | curry        | 15    | N             |         |
+| A           | 2021-01-01 | sushi        | 10    | N             |         |
+| A           | 2021-01-07 | curry        | 15    | Y             | 1       |
+| A           | 2021-01-10 | ramen        | 12    | Y             | 2       |
+| A           | 2021-01-11 | ramen        | 12    | Y             | 3       |
+| A           | 2021-01-11 | ramen        | 12    | Y             | 3       |
+| B           | 2021-01-01 | curry        | 15    | N             |         |
+| B           | 2021-01-02 | curry        | 15    | N             |         |
+| B           | 2021-01-04 | sushi        | 10    | N             |         |
+| B           | 2021-01-11 | sushi        | 10    | Y             | 1       |
+| B           | 2021-01-16 | ramen        | 12    | Y             | 2       |
+| B           | 2021-02-01 | ramen        | 12    | Y             | 3       |
+| C           | 2021-01-01 | ramen        | 12    | N             |         |
+| C           | 2021-01-01 | ramen        | 12    | N             |         |
+| C           | 2021-01-07 | ramen        | 12    | N             |         |
+
+* You will need information from all tables, so join `menu` and `members` in `join_all`.
+  * Note that you have to use a **LEFT JOIN** for `members` since customer C does not have a `join_date`.
+* Select all relevant columns and create a new column by using **CASE**: 'Y' when the purchase was made by a member, 'N' when it wasn't.
+* In the outer query, create a new column to identify the order number after becoming a member by using **CASE**, **DENSE_RANK** and **PARTITION**.
+* Use **ORDER BY** to make sure the rows are in the same order as the table's above.
+   
+### Answer
+
+```sql
+WITH join_all AS(
+  SELECT
+    customer_id, 
+    order_date, 
+    product_name,
+    price, 
+		CASE
+      WHEN order_date >= join_date THEN 'Y'
+      ELSE 'N'
+    END AS member_status
+  FROM dannys_diner.sales
+	JOIN dannys_diner.menu USING(product_id)
+	LEFT JOIN dannys_diner.members USING(customer_id)
+)
+
+SELECT 
+  *, 
+	CASE
+    WHEN member_status = 'N' THEN NULL
+    ELSE
+      DENSE_RANK() OVER (
+        PARTITION BY customer_id, member_status
+        ORDER BY order_date
+      )END AS ranking
+FROM join_all
+ORDER BY customer_id, order_date, product_name
+```
