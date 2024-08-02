@@ -2,7 +2,7 @@
 
 Information regarding this study can be found [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/README.md).
 
-## Case Study Questions:
+## Case Study Questions
 
 1. What is the total amount each customer spent at the restaurant?
 2. How many days has each customer visited the restaurant?
