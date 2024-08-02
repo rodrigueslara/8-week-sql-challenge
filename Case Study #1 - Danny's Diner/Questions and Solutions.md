@@ -1,5 +1,7 @@
 # Danny's Diner :stew: - Questions and Solutions
 
+---
+
 ## 1. What is the total amount each customer spent at the restaurant?
 
 * The information needed to answer this question is in two tables: `sales` and `menu`, so join those.
@@ -23,6 +25,7 @@ ORDER BY customer_id
 | B           | 74           |
 | C           | 36           |
 
+  ---
   
 ## 2. How many days has each customer visited the restaurant?
 
@@ -46,6 +49,7 @@ ORDER BY customer_id
 | B           | 6            |
 | C           | 2            |
 
+  ---
   
 ## 3. What was the first item from the menu purchased by each customer?
 
@@ -84,6 +88,7 @@ ORDER BY customer_id
 | B           | curry        |
 | C           | ramen        |
 
+  ---
   
 ## 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
@@ -107,6 +112,8 @@ LIMIT 1
 | ------------ | --------------- |
 | ramen        | 8               |
 
+
+  ---
   
 ## 5. Which item was the most popular for each customer?
 
@@ -146,6 +153,7 @@ ORDER BY customer_id
 | B           | ramen, curry, sushi |
 | C           | ramen               |
 
+---
 
 ## 6. Which item was purchased first by the customer after they became a member?
 
@@ -184,6 +192,8 @@ ORDER BY customer_id
 | ----------- | ------------ |
 | A           | ramen        |
 | B           | sushi        |
+
+---
 
 ## 7. Which item was purchased just before the customer became a member?
 
@@ -224,6 +234,7 @@ ORDER BY customer_id
 | A           | sushi, curry            |
 | B           | sushi                   |
 
+  ---
   
 ## 8. What is the total items and amount spent for each member before they became a member?
 
@@ -253,6 +264,8 @@ ORDER BY customer_id
 | A           | 2       | 25                  |
 | B           | 3       | 40                  |
 
+
+ ---
  
 ## 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
@@ -281,6 +294,8 @@ ORDER BY customer_id
 | A           | 860    |
 | B           | 940    |
 | C           | 360    |
+
+---
 
 ## 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
@@ -314,3 +329,11 @@ ORDER BY customer_id
 | ----------- | -------------- |
 | A           | 1370           |
 | B           | 820            |
+
+
+---
+
+## Bonus Question #1 - Join all things
+
+Recreate the following table:
+
