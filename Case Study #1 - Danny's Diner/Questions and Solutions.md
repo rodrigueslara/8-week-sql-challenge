@@ -369,8 +369,8 @@ WITH join_all AS(
     customer_id, 
     order_date, 
     product_name,
-    price, 
-		CASE
+    price,
+    CASE
       WHEN order_date >= join_date THEN 'Y'
       ELSE 'N'
     END AS member_status
@@ -380,8 +380,8 @@ WITH join_all AS(
 )
 
 SELECT 
-  *, 
-	CASE
+  *,
+  CASE
     WHEN member_status = 'N' THEN NULL
     ELSE
       DENSE_RANK() OVER (
