@@ -223,3 +223,30 @@ ORDER BY customer_id
 | ----------- | ----------------------- |
 | A           | sushi, curry            |
 | B           | sushi                   |
+
+  
+# 8. What is the total items and amount spent for each member before they became a member?
+
+* You need information from all tables, so join them.
+* Use **WHERE** since we are only interested in purchases made before customers A and B became members.
+* Use **COUNT** to calculate the number of items purchased.
+* Use **SUM** to calculate the amount spent for each customer.
+* **GROUP** to group by customer.
+
+```sql
+SELECT
+  customer_id,
+  COUNT(product_name) AS n_items,
+  SUM(price) as spent_before_member
+FROM dannys_diner.sales
+JOIN dannys_diner.menu USING(product_id)
+JOIN dannys_diner.members USING(customer_id)
+WHERE order_date < join_date
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+| customer_id | n_items | spent_before_member |
+| ----------- | ------- | ------------------- |
+| A           | 2       | 25                  |
+| B           | 3       | 40                  |
