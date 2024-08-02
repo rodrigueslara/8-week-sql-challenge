@@ -153,7 +153,7 @@ ORDER BY customer_id
 * Use **DENSE_RANK** and **WHERE** to identify the rows where the customer is already a member, ordered by the order date.
 * In the outer query, use **WHERE** since we are only interested in the first order after the customer becomes a member.
   * We will assume that, for rows where the order date is the same as the member join date, the customer became a member after ordering.
-* Had the customers ordered more than one product for their first purchase, note that we would have used **STRING_AGG** and **GROUP BY**, similar to the last question, to make the table easier to read.
+* Had the customers ordered more than one product for their first purchase, note that we would have used **STRING_AGG** and **GROUP BY**, similarly to the last question, to make the table easier to read.
 
 ```sql
 WITH ranked AS(
@@ -257,7 +257,7 @@ ORDER BY customer_id
 ## 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
 * You need `menu` for the prices, so we will join the table.
-* With **CASE**, create a new column: if the customer bought sushi, then the points for that purchase is `2 * 10 * price`. For everything else, it's `10 * price`.
+* With **CASE**, create a new column: if the customer bought sushi, then, for that purchase, the customer earned `2 * 10 * price` points. For everything else, they earned `10 * price` points.
 * Use **SUM** to add the points earned and **GROUP BY** to group by customer.
 
 ```sql
@@ -281,3 +281,36 @@ ORDER BY customer_id
 | A           | 860    |
 | B           | 940    |
 | C           | 360    |
+
+## 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+* We need information from all tables, so join `menu` and `members`.
+* Use **WHERE** since we are only interested in purchases before February.
+* Similarly to the last question, use **CASE**, **SUM** and **GROUP BY** to calculate the amount of points earned per customer.
+* Add a condition in **CASE** for points earned in the first week after a customer becomes a member: purchases made **BETWEEN** their join date and their join date + 6 days.
+* Note that we could also calculate the points customer C earned by using **LEFT JOIN** members instead of an inner join.
+
+```sql
+SELECT
+  customer_id,
+  SUM(
+    CASE 
+      WHEN order_date BETWEEN join_date AND join_date + INTERVAL '6' day THEN 20*price
+      WHEN product_name = 'sushi' THEN 20*price
+      ELSE 10*price
+    END
+  ) AS points_january
+FROM dannys_diner.sales
+JOIN dannys_diner.menu USING(product_id)
+JOIN dannys_diner.members USING(customer_id)
+WHERE order_date < '2021-02-01'
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | points_january |
+| ----------- | -------------- |
+| A           | 1370           |
+| B           | 820            |
