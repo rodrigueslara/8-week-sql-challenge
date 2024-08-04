@@ -29,7 +29,7 @@ All datasets exist within the pizza_runner database schema.
 
 You can inspect the entity relationship diagram and example data below.
 
-<img src="https://imgur.com/OYJumax" width=60% height=60%>
+<img src="https://imgur.com/OYJumax.png" width=60% height=60%>
 
 ---
 
