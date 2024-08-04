@@ -17,6 +17,8 @@ Danny was sold on the idea, but he knew that pizza alone was not going to help h
 
 Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runner Headquarters (otherwise known as Danny’s house) and also maxed out his credit card to pay freelance developers to build a mobile app to accept orders from customers.
 
+---
+
 ## Available Data
 
 Because Danny had a few years of experience as a data scientist - he was very aware that data collection was going to be critical for his business’ growth.
@@ -27,4 +29,8 @@ All datasets exist within the pizza_runner database schema.
 
 You can inspect the entity relationship diagram and example data below.
 
-<img src="https://imgur.com/a/ldm7iAQ" width=60% height=60%>
+<img src="https://imgur.com/OYJumax" width=60% height=60%>
+
+---
+
+We will inspect the data more thoroughly.
