@@ -31,6 +31,16 @@ You can inspect the entity relationship diagram and example data below.
 
 <img src="https://imgur.com/OYJumax.png" width=60% height=60%>
 
+We will inspect the data more thoroughly [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/0.%20%20Data%20%26%20Cleaning.md).
+
 ---
 
-We will inspect the data more thoroughly.
+## Case Study Questions
+
+This case study has LOTS of questions - they are broken up by area of focus including:
+
+* Pizza Metrics
+* Runner and Customer Experience
+* Ingredient Optimisation
+* Pricing and Ratings
+* Bonus DML Challenges (DML = Data Manipulation Language)
