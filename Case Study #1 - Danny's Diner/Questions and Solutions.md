@@ -29,7 +29,7 @@ SELECT
 FROM dannys_diner.sales
 JOIN dannys_diner.menu USING(product_id)
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -53,7 +53,7 @@ SELECT
   COUNT(DISTINCT order_date) AS days_visited
 FROM dannys_diner.sales
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -92,7 +92,7 @@ SELECT
 FROM helper
 WHERE order_rank = 1
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -118,7 +118,7 @@ FROM dannys_diner.sales
 JOIN dannys_diner.menu USING(product_id)
 GROUP BY product_name
 ORDER BY times_purchased DESC
-LIMIT 1
+LIMIT 1;
 ```
 
 ### Answer
@@ -157,7 +157,7 @@ SELECT
 FROM popular
 WHERE order_rank = 1
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -198,7 +198,7 @@ SELECT
   product_name
 FROM ranked
 WHERE rank_order = 1
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -239,7 +239,7 @@ SELECT
 FROM ranked
 WHERE rank_order = 1
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -269,7 +269,7 @@ JOIN dannys_diner.menu USING(product_id)
 JOIN dannys_diner.members USING(customer_id)
 WHERE order_date < join_date
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -299,7 +299,7 @@ SELECT customer_id,
 FROM dannys_diner.sales
 JOIN dannys_diner.menu USING(product_id)
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -335,7 +335,7 @@ JOIN dannys_diner.menu USING(product_id)
 JOIN dannys_diner.members USING(customer_id)
 WHERE order_date < '2021-02-01'
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -404,5 +404,5 @@ SELECT
         ORDER BY order_date
   )END AS ranking
 FROM join_all
-ORDER BY customer_id, order_date, product_name
+ORDER BY customer_id, order_date, product_name;
 ```
