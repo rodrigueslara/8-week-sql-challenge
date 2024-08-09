@@ -85,3 +85,97 @@ ORDER BY runner_id;
 ---
 
 ## 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+
+* **JOIN** `runner_orders` in `order_time`.
+* We are not interested in the canceled orders, so use **WHERE**.
+* Use **COUNT** and **GROUP BY** to identify the number of pizzas per order, and `EXTRACT(EPOCH FROM AVG(pickup_time - order_time)/60)` to get the minutes spent to prepare.
+  * Note that **AVG** works since each pizza from the same order has the same preparation time.
+* In the outer query, use **AVG** and **GROUP BY** to get the average minutes taken to prepare an order with *n* amount of pizzas.
+  * For more information on **EXTRACT**, **numeric**, etc, look at previous question.
+
+```sql
+WITH order_time AS(
+  SELECT
+    COUNT(pizza_id) AS n_pizza,
+    EXTRACT(EPOCH FROM AVG(pickup_time - order_time)/60) AS wait_time
+  FROM customer_orders_temp
+  JOIN runner_orders_temp USING(order_id)
+  WHERE pickup_time IS NOT null
+  GROUP BY order_id
+)
+
+SELECT
+  n_pizza,
+  ROUND(AVG(wait_time)::numeric,2) AS prep_time
+FROM order_time
+GROUP BY n_pizza
+ORDER BY n_pizza
+```
+
+### Answer
+
+| n_pizza | prep_time |
+| ------- | --------- |
+| 1       | 12.36     |
+| 2       | 18.38     |
+| 3       | 29.28     |
+
+**Yes**, there is a relationship between the number of pizzas and preparation time: As the number of pizzas increases, so does the preparation time.
+
+---
+
+## 4. What was the average distance traveled for each customer?
+
+* Use **JOIN** in `order_distance` to get information from `customer_orders` and `runner_order`.
+  * Note that we need to use **DISTINCT** to get rid of double `order_id` since the distance traveled for each customer is only traveled once per order: it does not depend on the number of pizzas ordered.
+* We are not interested in the canceled orders, so use **WHERE**.
+* **SELECT** `DISTINCT order_id`, `customer_id` and `distance_km`.
+* In the outer query, use **AVG** AND **GROUP BY** to get the average distance for each customer.
+  * For more information on **ROUND** and **numeric** look at question #2.
+
+```sql
+WITH order_distance AS(
+  SELECT
+    DISTINCT order_id,
+    customer_id,
+    distance_km
+  FROM runner_orders_temp
+  JOIN customer_orders_temp USING(order_id)
+  WHERE cancellation IS null
+)
+
+SELECT
+  customer_id,
+  ROUND(AVG(distance_km)::numeric,2) AS avg_traveled
+FROM order_distance
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+### Answer
+
+| customer_id | avg_traveled |
+| ----------- | ------------ |
+| 101         | 20.00        |
+| 102         | 18.40        |
+| 103         | 23.40        |
+| 104         | 10.00        |
+| 105         | 25.00        |
+
+---
+
+## 5. What was the difference between the longest and shortest delivery times for all orders?
+
+* Use **MAX** and **MIN** to get the longest and shortest delivery times, and subtract them to get the difference.
+
+```sql
+SELECT
+  MAX(duration_min) - MIN(duration_min) AS dif_time
+FROM runner_orders_temp
+```
+
+| dif_time |
+| -------- |
+| 30       |
+
+---
