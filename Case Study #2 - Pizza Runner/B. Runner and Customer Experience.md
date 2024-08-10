@@ -109,7 +109,7 @@ SELECT
   ROUND(AVG(wait_time)::numeric,2) AS prep_time
 FROM order_time
 GROUP BY n_pizza
-ORDER BY n_pizza
+ORDER BY n_pizza;
 ```
 
 ### Answer
@@ -149,7 +149,7 @@ SELECT
   ROUND(AVG(distance_km)::numeric,2) AS avg_traveled
 FROM order_distance
 GROUP BY customer_id
-ORDER BY customer_id
+ORDER BY customer_id;
 ```
 
 ### Answer
@@ -171,11 +171,78 @@ ORDER BY customer_id
 ```sql
 SELECT
   MAX(duration_min) - MIN(duration_min) AS dif_time
-FROM runner_orders_temp
+FROM runner_orders_temp;
 ```
+
+### Answer
 
 | dif_time |
 | -------- |
 | 30       |
 
 ---
+
+## 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+* Use **JOIN** in `order_distance` to get information from `customer_orders` and `runner_order`.
+  * Note that we need to use **DISTINCT** to get rid of double `order_id` since the two or three pizzas from the same order are delivered at the same time.
+* We are not interested in the canceled orders, so use **WHERE**.
+* **SELECT** **DISTINCT** `runner_id`, `order_id` and `distance_km/duration_min*60` to get the average speed for each order in km/h.
+  * For more information on **ROUND** and **numeric** look at question #2.
+
+```sql
+SELECT
+  DISTINCT runner_id,
+  order_id,
+  ROUND((distance_km/duration_min*60)::numeric,2) AS avg_speed
+FROM runner_orders_temp
+JOIN customer_orders_temp USING(order_id)
+WHERE cancellation IS null
+ORDER BY runner_id, avg_speed;
+```
+
+### Answer 
+
+| runner_id | order_id | avg_speed |
+| --------- | -------- | --------- |
+| 1         | 1        | 37.50     |
+| 1         | 3        | 40.20     |
+| 1         | 2        | 44.44     |
+| 1         | 10       | 60.00     |
+| 2         | 4        | 35.10     |
+| 2         | 7        | 60.00     |
+| 2         | 8        | 93.60     |
+| 3         | 5        | 40.00     |
+
+There isn't enough information to notice a trend, but it's worth noting that runner 2 has a difference of almost 60 km/h between their highest and lowest average speed.
+
+---
+
+## 7. What is the successful delivery percentage for each runner?
+
+* Successful delivery percentage is equal to the number of successful deliveries divided by the number of total orders times 100.
+  * The number of successful deliveries is `COUNT(pickup_time)`, since **COUNT** doesn't count `null` values;
+  * The number of total orders is `COUNT(order_id)`.
+  * Note that `::numeric` is used so that SQL gives the right value, not the truncated one.
+* Use **GROUP BY** runner to get the successful delivery percentage for each runner.
+
+```sql
+SELECT
+  runner_id,
+  ROUND(COUNT(pickup_time)::numeric/COUNT(order_id)*100) AS successful_deliveries
+FROM runner_orders_temp
+GROUP BY runner_id
+ORDER BY runner_id
+```
+
+### Answer
+
+| runner_id | successful_deliveries |
+| --------- | --------------------- |
+| 1         | 100                   |
+| 2         | 75                    |
+| 3         | 50                    |
+
+---
+
+Check out the solutions for the next section - [Ingredient Optimisation](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/C.%20Ingredient%20Optimisation.md)
