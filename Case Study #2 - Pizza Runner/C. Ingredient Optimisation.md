@@ -22,7 +22,7 @@ All the data and cleaning can be found [here](https://github.com/rodrigueslara/8
 
 ---
 
-1. What are the standard ingredients for each pizza?
+## 1. What are the standard ingredients for each pizza?
 
 * In `toppings_cte`, use **UNNEST** with **STRING_TO_ARRAY** to get a column with `toppings_id` for each pizza.
 * In the outer query, **JOIN** `toppings_cte`and `pizza_toppings` to get the `topping_name`.
@@ -30,7 +30,7 @@ All the data and cleaning can be found [here](https://github.com/rodrigueslara/8
 * Use **SELECT** `pizza_name` and `STRING_AGG(topping_name)`, and **GROUP BY** pizza_name to get the standard ingredients for each pizza.
 
 ```sql
-WITH toppings_cte AS(
+WITH toppings_cte AS (
    SELECT
       pizza_name,
       UNNEST(STRING_TO_ARRAY(toppings, ','))::integer AS toppings
@@ -44,7 +44,7 @@ SELECT
 FROM pizza_runner.pizza_toppings
 JOIN toppings_cte
    ON topping_id = toppings
-GROUP BY pizza_name
+GROUP BY pizza_name;
 ```
 
 ### Answer
@@ -53,5 +53,160 @@ GROUP BY pizza_name
 | ---------- | --------------------------------------------------------------------- |
 | Meatlovers | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami |
 | Vegetarian | Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce            |
+
+---
+
+## 2. What was the most commonly added extra?
+
+* In `toppings_added`, get a column with every extra added.
+* In the outer query, **JOIN** `pizza_toppings` to get the `topping_name`.
+* Use **COUNT** and **GROUP BY** to get the number of extras added for each extra.
+* Use **LIMIT** to get the most common added extra.
+
+```sql
+WITH toppings_added AS (
+   SELECT
+      UNNEST(STRING_TO_ARRAY(extras, ','))::integer AS extras_added
+   FROM customer_orders_temp
+)
+
+SELECT
+   topping_name,
+   COUNT(extras_added) AS n_added
+FROM toppings_added
+JOIN pizza_runner.pizza_toppings
+   ON topping_id = extras_added
+GROUP BY topping_name
+ORDER BY n_added DESC
+LIMIT 1
+```
+
+### Answer 
+
+| topping_name | n_added |
+| ------------ | ------- |
+| Bacon        | 4       |
+
+---
+
+## 3. What was the most common exclusion?
+
+* The same as the previous question.
+  
+```sql
+WITH exclusions_cte AS (
+   SELECT
+      UNNEST(STRING_TO_ARRAY(exclusions, ','))::integer AS exclusions
+   FROM customer_orders_temp
+)
+
+SELECT
+   topping_name,
+   COUNT(exclusions) AS n_excluded
+FROM exclusions_cte
+JOIN pizza_runner.pizza_toppings
+   ON topping_id = exclusions
+GROUP BY topping_name
+ORDER BY n_excluded DESC
+LIMIT 1
+```
+
+### Answer
+
+| topping_name | n_excluded |
+| ------------ | ---------- |
+| Cheese       | 4          |
+
+---
+
+## 4. Generate an order item for each record in the customers_orders table in the format of one of the following:
+- Meat Lovers
+- Meat Lovers - Exclude Beef
+- Meat Lovers - Extra Bacon
+- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+
+* `exclusions_cte` and `extras_cte` are used to get the number of the pizza and a string with its extras/exclusions.
+* You will notice that both have subqueries - these are used to get a column with `n_pizza` by using **ROW_NUMBER** (to make a distinction between pizzas from the same order) and a column with the exclusions/extras.
+* In the outer query (that also has a subquery to get `n_pizza`), **JOIN** all tables with relevant information.
+* Create a new column with **CASE** that covers all 4 cases:
+  * No extras and no exclusions - the result is just the `pizza_name`.
+  * Extra(s) and no exclusions - `pizza_name` + Extras (which I called `top_extra`) from `extras_cte`.
+  * Exclusion(s) and no extras - `pizza_name` + Exclusions (which I called `top_excl`) from `exclusions_cte`.
+  * Extra(s) and exclusion(s) - `pizza_name` + Exclusions + Extras.
+  * Use **CONCAT** to get the format you want.
+* Use **ORDER BY** to get the same order as the original `customer_orders`.
+
+```sql
+WITH exclusions_cte AS(
+   SELECT
+      n_pizza,
+      STRING_AGG(topping_name,', ') AS top_excl
+   FROM
+      (SELECT
+         ROW_NUMBER() OVER(ORDER BY order_id) AS n_pizza,
+         UNNEST(STRING_TO_ARRAY(exclusions,','))::integer AS exc 
+      FROM customer_orders_temp
+      ) AS sub_exc
+   JOIN pizza_runner.pizza_toppings
+      ON topping_id = exc
+   GROUP BY n_pizza
+),
+
+extras_cte AS(
+   SELECT
+      n_pizza,
+      STRING_AGG(topping_name,', ') AS top_extra
+   FROM
+      (SELECT
+         ROW_NUMBER() OVER(ORDER BY order_id) AS n_pizza,
+         UNNEST(STRING_TO_ARRAY(extras,','))::integer AS ext 
+      FROM customer_orders_temp
+      ) AS sub_extra
+   JOIN pizza_runner.pizza_toppings
+      ON topping_id = ext
+   GROUP BY n_pizza
+)
+
+SELECT 
+   order_id, 
+   customer_id, 
+   CASE
+      WHEN (top_extra IS NULL AND top_excl IS NULL) THEN pizza_name
+      WHEN (top_extra IS NOT NULL AND top_excl IS NULL) THEN CONCAT(pizza_name, ' - Extra ', top_extra)
+      WHEN (top_extra IS NULL AND top_excl IS NOT NULL) THEN CONCAT(pizza_name, ' - Exclude ', top_excl)
+      ELSE CONCAT(pizza_name, ' - Exclude ', top_excl, ' - Extra ', top_extra)
+   END AS cust_order
+FROM
+   (SELECT
+      *,
+      ROW_NUMBER() OVER(ORDER BY order_id) AS n_pizza
+   FROM customer_orders_temp
+   ) AS helper_row
+JOIN pizza_runner.pizza_names USING(pizza_id)
+LEFT JOIN extras_cte USING(n_pizza)
+LEFT JOIN exclusions_cte USING(n_pizza)
+ORDER BY order_id, pizza_name, exclusions DESC
+```
+
+### Answer
+
+| order_id | customer_id | cust_order                                                      |
+| -------- | ----------- | --------------------------------------------------------------- |
+| 1        | 101         | Meatlovers                                                      |
+| 2        | 101         | Meatlovers                                                      |
+| 3        | 102         | Meatlovers                                                      |
+| 3        | 102         | Vegetarian                                                      |
+| 4        | 103         | Meatlovers - Exclude Cheese                                     |
+| 4        | 103         | Meatlovers - Exclude Cheese                                     |
+| 4        | 103         | Vegetarian - Exclude Cheese                                     |
+| 5        | 104         | Meatlovers - Extra Bacon                                        |
+| 6        | 101         | Vegetarian                                                      |
+| 7        | 105         | Vegetarian - Extra Bacon                                        |
+| 8        | 102         | Meatlovers                                                      |
+| 9        | 103         | Meatlovers - Exclude Cheese - Extra Bacon, Chicken              |
+| 10       | 104         | Meatlovers                                                      |
+| 10       | 104         | Meatlovers - Exclude BBQ Sauce, Mushrooms - Extra Bacon, Cheese |
+
+If you're like me, at first sight, you're thinking this must be wrong. Why would someone choose a vegetarian pizza just to add bacon? I check every answer, I assure you this is right. People who choose vegetarian options don't have to be vegetarian. 
 
 ---
