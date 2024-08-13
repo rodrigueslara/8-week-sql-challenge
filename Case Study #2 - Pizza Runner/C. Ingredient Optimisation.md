@@ -78,7 +78,7 @@ JOIN pizza_runner.pizza_toppings
    ON topping_id = extras_added
 GROUP BY topping_name
 ORDER BY n_added DESC
-LIMIT 1
+LIMIT 1;
 ```
 
 ### Answer 
@@ -108,7 +108,7 @@ JOIN pizza_runner.pizza_toppings
    ON topping_id = exclusions
 GROUP BY topping_name
 ORDER BY n_excluded DESC
-LIMIT 1
+LIMIT 1;
 ```
 
 ### Answer
@@ -185,7 +185,7 @@ FROM
 JOIN pizza_runner.pizza_names USING(pizza_id)
 LEFT JOIN extras_cte USING(n_pizza)
 LEFT JOIN exclusions_cte USING(n_pizza)
-ORDER BY order_id, pizza_name, exclusions DESC
+ORDER BY order_id, pizza_name, exclusions DESC;
 ```
 
 ### Answer
@@ -210,3 +210,163 @@ ORDER BY order_id, pizza_name, exclusions DESC
 If you're like me, at first sight, you're thinking this must be wrong. Why would someone choose a vegetarian pizza just to add bacon? I check every answer, I assure you this is right. People who choose vegetarian options don't have to be vegetarian. 
 
 ---
+
+## 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
+- For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+
+* `main_cte` will have everything we need, including `n_pizza`, to identify different pizzas in the same order.
+* `toppings_id_after_exclusions_` will do exactly that: get a string of toppings id's after we remove toppings that are in `exclusions`.
+* `final_toppings_id` gets a string of toppings id's after the exclusions (from the previous point) and the added extras. If there are two Bacon's in an order, it will have two `1`'s.
+* `count_to_replace` will count toppings id's and `to_replace` will get `2x` topping when count is 2.
+* In the outer query, all that's left to do is to use **STRING_AGG** to format everything.
+
+```sql
+WITH main_cte AS (
+   SELECT
+      ROW_NUMBER() OVER (ORDER BY order_id, pizza_name, exclusions DESC) AS n_pizza,
+      order_id,
+      customer_id,
+      pizza_id,
+      pizza_name,
+      exclusions,
+      extras,
+      toppings
+   FROM customer_orders_temp
+   JOIN pizza_runner.pizza_names USING(pizza_id)
+   JOIN recipes_temp USING(pizza_id)
+),
+
+toppings_id_after_exclusions AS (
+   SELECT
+      n_pizza,
+      ARRAY_TO_STRING(ARRAY_AGG(e),',') t_exclusion
+   FROM main_cte CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(toppings,',')) e
+   WHERE NOT e = ANY(coalesce(STRING_TO_ARRAY(exclusions,','), '{}'))
+   GROUP BY n_pizza 
+),
+
+final_toppings_id AS (
+   SELECT
+      n_pizza,
+      order_id,
+      customer_id,
+      pizza_name,
+   	ARRAY_TO_STRING(ARRAY(SELECT UNNEST(STRING_TO_ARRAY(t_final,',')::int[]) ORDER BY 1),', ') AS f_top_id
+   FROM
+      (SELECT
+         *,
+         CASE
+            WHEN extras IS null THEN t_exclusion
+            ELSE extras || ',' || t_exclusion
+         END AS t_final
+      FROM main_cte
+      JOIN toppings_id_after_exclusions USING(n_pizza)
+      ) h_c
+),
+
+count_to_replace AS (
+   SELECT
+      n_pizza,
+      elmt,
+      COUNT(elmt)
+   FROM
+      (SELECT
+         n_pizza,
+         UNNEST(STRING_TO_ARRAY(f_top_id,','))::int AS elmt
+      FROM final_toppings_id
+      ) AS helper_count
+   GROUP BY n_pizza, elmt
+), 
+
+to_replace AS (
+   SELECT
+      n_pizza,
+      CASE
+         WHEN count = 2 THEN REPLACE(topping_name,topping_name,'2x ' || topping_name)
+         ELSE topping_name
+      END AS n_top
+   FROM count_to_replace
+   JOIN pizza_runner.pizza_toppings
+      ON topping_id = elmt
+)
+
+SELECT
+   order_id,
+   customer_id,
+   pizza_name || ': ' || final_top AS cust_order
+   FROM
+      (SELECT
+         n_pizza,
+         STRING_AGG(n_top,', ') AS final_top
+      FROM to_replace
+      GROUP BY n_pizza
+      ) agg_top
+JOIN final_toppings_id USING(n_pizza)
+ORDER BY n_pizza;
+```
+
+### Answer
+
+| order_id | customer_id | cust_order                                                                           |
+| -------- | ----------- | ------------------------------------------------------------------------------------ |
+| 1        | 101         | Meatlovers: Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami    |
+| 2        | 101         | Meatlovers: Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami    |
+| 3        | 102         | Meatlovers: Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami    |
+| 3        | 102         | Vegetarian: Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce               |
+| 4        | 103         | Meatlovers: Bacon, BBQ Sauce, Beef, Chicken, Mushrooms, Pepperoni, Salami            |
+| 4        | 103         | Meatlovers: Bacon, BBQ Sauce, Beef, Chicken, Mushrooms, Pepperoni, Salami            |
+| 4        | 103         | Vegetarian: Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce                       |
+| 5        | 104         | Meatlovers: 2x Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami |
+| 6        | 101         | Vegetarian: Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce               |
+| 7        | 105         | Vegetarian: Bacon, Cheese, Mushrooms, Onions, Peppers, Tomatoes, Tomato Sauce        |
+| 8        | 102         | Meatlovers: Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami    |
+| 9        | 103         | Meatlovers: 2x Bacon, BBQ Sauce, Beef, 2x Chicken, Mushrooms, Pepperoni, Salami      |
+| 10       | 104         | Meatlovers: Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami    |
+| 10       | 104         | Meatlovers: 2x Bacon, Beef, 2x Cheese, Chicken, Pepperoni, Salami                    |
+
+---
+
+## 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+
+* We'll use the previous `final_toppings_id` for this question.
+* In the subquery, use **WHERE** since we are only interested in the pizzas that have been delivered.
+* In the subquery, use **UNNEST** and **STRING_TO_ARRAY**  to get a column with toppings IDs that have been used.
+* Use **COUNT** and **GROUP BY** to calculate the total quantity of each ingredient used in delivered pizzas.
+
+```sql
+SELECT
+   topping_name,
+   COUNT(elmt) AS n_delivered
+FROM
+   (SELECT
+      UNNEST(STRING_TO_ARRAY(f_top_id,','))::integer AS elmt
+   FROM final_toppings_id
+   JOIN runner_orders_temp USING(order_id)
+   WHERE pickup_time IS NOT null
+   ) AS helper
+JOIN pizza_runner.pizza_toppings
+   ON topping_id = elmt
+GROUP BY topping_name
+ORDER BY n_delivered DESC;
+```
+
+### Answer
+
+| topping_name | n_delivered |
+| ------------ | ----------- |
+| Bacon        | 12          |
+| Mushrooms    | 11          |
+| Cheese       | 10          |
+| Pepperoni    | 9           |
+| Chicken      | 9           |
+| Salami       | 9           |
+| Beef         | 9           |
+| BBQ Sauce    | 8           |
+| Tomato Sauce | 3           |
+| Onions       | 3           |
+| Tomatoes     | 3           |
+| Peppers      | 3           |
+
+---
+
+Check out the solutions for the next section - [Pricing and Ratings](https://github.com/rodrigueslara/8-week-sql-challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner).
