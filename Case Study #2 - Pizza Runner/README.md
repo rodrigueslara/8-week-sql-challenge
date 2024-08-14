@@ -39,8 +39,8 @@ We will inspect the data more thoroughly [here](https://github.com/rodrigueslara
 
 This case study has LOTS of questions - they are broken up by area of focus including:
 
-* Pizza Metrics
-* Runner and Customer Experience
-* Ingredient Optimisation
-* Pricing and Ratings
-* Bonus DML Challenges (DML = Data Manipulation Language)
+* [Pizza Metrics](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/A.%20Pizza%20Metrics.md)
+* [Runner and Customer Experience](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/B.%20Runner%20and%20Customer%20Experience.md)
+* [Ingredient Optimisation](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/C.%20Ingredient%20Optimisation.md)
+* [Pricing and Ratings](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/D.%20Pricing%20and%20Ratings.md)
+* Bonus DML Challenges (DML = Data Manipulation Language) - End of Pricing and Ratings
