@@ -369,4 +369,4 @@ ORDER BY n_delivered DESC;
 
 ---
 
-Check out the solutions for the next section - [Pricing and Ratings](https://github.com/rodrigueslara/8-week-sql-challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner).
+Check out the solutions for the next section - [Pricing and Ratings](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/D.%20Pricing%20and%20Ratings.md).
