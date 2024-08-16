@@ -56,7 +56,10 @@ This table has more than 2 thousand rows. Here are the first 10:
 
 This case study is split into an initial data understanding question before diving straight into data analysis questions before finishing with 1 single extension challenge.
 
-A. Customer Journey
-B. Data Analysis Questions
+A. [Customer Journey](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/A.%20Customer%20Journey.md)
+
+B. [Data Analysis Questions](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md)
+
 C. Challenge Payment Question
+
 D. Outside The Box Questions
