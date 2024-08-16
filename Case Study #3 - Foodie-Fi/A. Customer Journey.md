@@ -1,6 +1,6 @@
 # Foodie-Fi 🥑 - Customer Journer
 
-Information regarding this study can be found [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/README.md).
+Information regarding this study can be found [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/README.md).
 
 ---
 
