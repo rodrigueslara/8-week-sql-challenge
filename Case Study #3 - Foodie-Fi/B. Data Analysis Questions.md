@@ -203,3 +203,107 @@ Note that if we add the percentages, we get 90,8%. If we sum the churned percent
 ---
 
 ## 7. What is the customer count and percentage breakdown of all 5 `plan_name` values at `2020-12-31`?
+
+* In `cte_ranked`, use **JOIN** to get all the information needed.
+* Use **WHERE** since we are only interested in events before 2020-12-31.
+* In `cte_ranked`, use **RANK** and **PARTITION** to identify the last event for each customer before 2020-12-31.
+* In the outer query, use **WHERE** to get the last event before the given date.
+* Customer and percentage calculation is the same as in previous questions.
+
+```sql
+WITH cte_ranked AS (
+  SELECT
+    plan_name,
+    RANK() OVER(PARTITION BY customer_id ORDER BY start_date DESC) AS ranked_plan
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE start_date <= '2020-12-31'
+)
+
+SELECT
+  plan_name,
+  COUNT(plan_name) AS n_customers,
+  ROUND(COUNT(plan_name)::numeric/1000*100,1) AS percentage_customers FROM cte_ranked
+WHERE ranked_plan = 1
+GROUP by plan_name
+ORDER BY percentage_customers DESC;
+```
+
+### Answer
+
+| plan_name     | n_customers | percentage_customers |
+| ------------- | ----------- | -------------------- |
+| pro monthly   | 326         | 32.6                 |
+| churn         | 236         | 23.6                 |
+| basic monthly | 224         | 22.4                 |
+| pro annual    | 195         | 19.5                 |
+| trial         | 19          | 1.9                  |
+
+---
+
+## 8. How many customers have upgraded to an annual plan in 2020?
+
+* Use **JOIN** to get all the information needed.
+* Use **WHERE to:
+  * Get all rows where the customer changed plans in 2020.
+  * Get rows where the customer upgraded to an annual plan.
+* Use **COUNT** to calculate the number of customers that have upgraded to an annual plan in 2020.
+  * Note that I used **DISTINCT** to make sure that a customer who changed to an annual, then to basic, then back to annual (as an example) wouldn't be counted twice.
+  
+```sql
+SELECT
+  COUNT(DISTINCT customer_id) AS annual_upgrade
+FROM foodie_fi.subscriptions
+JOIN foodie_fi.plans USING(plan_id)
+WHERE EXTRACT(YEAR FROM start_date) = '2020' AND plan_name = 'pro annual';
+```
+
+### Answer
+
+| annual_upgrade |
+| -------------- |
+| 195            |
+
+---
+
+## 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+
+* In `trial_date`, we get the `start_date` for the trial plan.
+* In  `annual_date`, we get the `start_date` for the annual plan.
+* In the outer query, **JOIN** both tables, calculate the average and round it.
+
+```sql
+WITH trial_date AS (
+  SELECT
+    customer_id,
+    start_date
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE plan_name = 'trial'
+),
+
+annual_date AS (
+  SELECT
+    customer_id,
+    start_date AS end_date
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE plan_name = 'pro annual'
+)
+
+SELECT
+  ROUND(AVG(end_date - start_date), 2) AS avg_days
+FROM trial_date
+JOIN annual_date USING(customer_id);
+```
+
+### Answer
+
+| avg_days |
+| -------- |
+| 104.62   |
+
+---
+
+## 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+
