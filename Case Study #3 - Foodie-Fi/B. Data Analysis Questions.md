@@ -307,3 +307,96 @@ JOIN annual_date USING(customer_id);
 
 ## 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
+* `trial_date` and `annual_date` are the same as in the previous question.
+* In the outer query:
+  * Divide `end_date - start_date` by 30 to get the window it's in: first (0-29), second (30-59), etc...
+  * Subtract by `0.01`. Since 0-29 is not what we want, we'll just subtract by a small value so that it won't affect the result but will give what is asked. Note that if it took a customer 60 days to subscribe to an annual plan: 60/30 = 2. But the customer would belong in the first window. So 60/30-0,1 = 1,9.
+  * Use **TRUNC** to round down.
+  * Add 1 so that the first window is 1 and not 0, which is not needed but it makes it easier to read.
+* Use **COUNT** and **GROUP BY** to calculate the days a customer took to subscribe to an annual plan grouped by 30-day periods.
+
+```sql
+WITH trial_date AS (
+  SELECT
+    customer_id,
+    start_date
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE plan_name = 'trial'
+),
+
+annual_date AS (
+  SELECT
+    customer_id,
+    start_date AS end_date
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE plan_name = 'pro annual'
+)
+
+SELECT
+  TRUNC((end_date - start_date)::numeric/30-0.01) + 1 AS interval_30_days,
+  COUNT(*) AS annual_sub
+FROM trial_date
+JOIN annual_date USING(customer_id)
+GROUP BY interval_30_days
+ORDER BY interval_30_days;
+```
+
+### Answer
+
+| interval_30_days | annual_sub |
+| ---------------- | ---------- |
+| 1                | 49         |
+| 2                | 24         |
+| 3                | 34         |
+| 4                | 35         |
+| 5                | 42         |
+| 6                | 36         |
+| 7                | 26         |
+| 8                | 4          |
+| 9                | 5          |
+| 10               | 1          |
+| 11               | 1          |
+| 12               | 1          |
+
+* 49 customers took less than 31 days to subscribe to an annual plan;
+* 24 customers took more than 30 days and less than 61;
+* 34 customers took more than 60 days and less than 91.
+* ...
+
+---
+
+## How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+* In `cte_ranked`, use **WHERE** to:
+  * Get rows where the event involves a basic monthly or a pro monthly.
+  * Get rows where the event happened in 2020.
+* Use **RANK** to identify events ordered by `start_date`.
+* In the outer query, use **WHERE** to get all events where the second event involves a basic monthly subscription (which means that the first involves a pro monthly).
+* Use **COUNT** to count all the events.
+
+```sql
+WITH cte_ranked AS (
+  SELECT *,
+  RANK() OVER(PARTITION BY customer_id ORDER BY start_date) AS ranked_date
+  FROM foodie_fi.subscriptions
+  JOIN foodie_fi.plans USING(plan_id)
+  WHERE plan_name IN ('basic monthly','pro monthly') AND EXTRACT(YEAR FROM start_date) = '2020'
+)
+
+SELECT
+  COUNT(*) AS downgrade_monthly
+FROM cte_ranked
+WHERE plan_name = 'basic monthly' AND ranked_date = 2;
+```
+
+### Answer
+
+| downgrade_monthly |
+| ----------------- |
+| 0                 |
+
+---
+
+Check out solutions for the next section - [Challenge Payment Question](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/C.%20Challenge%20Payment%20Question.md)
