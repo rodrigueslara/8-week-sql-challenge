@@ -367,7 +367,7 @@ ORDER BY interval_30_days;
 
 ---
 
-## How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+## 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
 * In `cte_ranked`, use **WHERE** to:
   * Get rows where the event involves a basic monthly or a pro monthly.
