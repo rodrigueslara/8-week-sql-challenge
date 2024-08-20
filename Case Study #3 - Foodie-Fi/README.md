@@ -60,6 +60,5 @@ A. [Customer Journey](https://github.com/rodrigueslara/8-week-sql-challenge/blob
 
 B. [Data Analysis Questions](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/B.%20Data%20Analysis%20Questions.md)
 
-C. Challenge Payment Question
+C. [Challenge Payment Question](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/C.%20Challenge%20Payment%20Question.md)
 
-D. Outside The Box Questions
