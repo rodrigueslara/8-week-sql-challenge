@@ -13,3 +13,5 @@ A special thanks to Danny Ma for creating this incredible challenge.
 [Case Study #2](https://github.com/rodrigueslara/8-week-sql-challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner) - Pizza Runner 🍕
 
 [Case Study #3](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/README.md) - Foodie-Fi 🥑
+
+[Case Study #4](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/README.md) - Data Bank 💲
