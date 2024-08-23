@@ -2,6 +2,8 @@
 
 Information regarding this study can be found [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/README.md).
 
+Click [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/A.%20Data%20Cleansing.md) to see what I've done to clean the table.
+
 ---
 
 ## Data Exploration
