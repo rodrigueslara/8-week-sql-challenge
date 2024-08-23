@@ -81,10 +81,8 @@ This table stores all customer deposits, withdrawals and purchases made using th
 
 The following case study questions include some general data exploration analysis for the nodes and transactions before diving right into the core business questions and finishes with a challenging final request!
 
-A. Customer Nodes Exploration
+A. [Customer Nodes Exploration](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/A.%20Customer%20Nodes%20Exploration.md)
 
-B. Customer Transactions
+B. [Customer Transactions](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/B.%20Customer%20Transactions.md)
 
-C. Data Allocation Challenge
 
-D. Extra Challenge
