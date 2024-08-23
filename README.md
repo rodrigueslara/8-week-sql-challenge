@@ -15,3 +15,5 @@ A special thanks to Danny Ma for creating this incredible challenge.
 [Case Study #3](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/README.md) - Foodie-Fi 🥑
 
 [Case Study #4](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%234%20-%20Data%20Bank/README.md) - Data Bank 💲
+
+[Case Study #5](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/README.md) - Data Mart 💰
