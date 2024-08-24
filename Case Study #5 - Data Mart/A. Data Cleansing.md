@@ -59,7 +59,9 @@ CREATE TABLE data_mart.clean_weekly_sales AS (
       ELSE 'unknown'
     END AS demographic,
     customer_type,
-    ROUND(sales::numeric/transactions,2) AS avg_transaction
+    ROUND(sales::numeric/transactions,2) AS avg_transaction,
+    transactions,
+    sales
   FROM cte_date
 
 );
@@ -67,18 +69,18 @@ CREATE TABLE data_mart.clean_weekly_sales AS (
 
 Here are the first 10 rows:
 
-| week_date                | week_number | month_number | calendar_year | region | platform | segment | age_band     | demographic | customer_type | avg_transaction |
-| ------------------------ | ----------- | ------------ | ------------- | ------ | -------- | ------- | ------------ | ----------- | ------------- | --------------- |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Retail   | C3      | Retirees     | Couples     | New           | 30.31           |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Retail   | F1      | Young Adults | Families    | New           | 31.56           |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | USA    | Retail   | unknown | unknown      | unkownn     | Guest         | 31.20           |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | EUROPE | Retail   | C1      | Young Adults | Couples     | New           | 31.42           |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Retail   | C2      | Middle Aged  | Couples     | New           | 30.29           |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | CANADA | Shopify  | F2      | Middle Aged  | Families    | Existing      | 182.54          |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Shopify  | F3      | Retirees     | Families    | Existing      | 206.64          |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Shopify  | F1      | Young Adults | Families    | Existing      | 172.11          |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Shopify  | F2      | Middle Aged  | Families    | New           | 155.84          |
-| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Retail   | C3      | Retirees     | Couples     | New           | 35.02           |
+| week_date                | week_number | month_number | calendar_year | region | platform | segment | age_band     | demographic | customer_type | avg_transaction | transactions | sales    |
+| ------------------------ | ----------- | ------------ | ------------- | ------ | -------- | ------- | ------------ | ----------- | ------------- | --------------- | ------------ | -------- |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Retail   | C3      | Retirees     | Couples     | New           | 30.31           | 120631       | 3656163  |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Retail   | F1      | Young Adults | Families    | New           | 31.56           | 31574        | 996575   |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | USA    | Retail   | unknown | unknown      | unknown     | Guest         | 31.20           | 529151       | 16509610 |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | EUROPE | Retail   | C1      | Young Adults | Couples     | New           | 31.42           | 4517         | 141942   |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Retail   | C2      | Middle Aged  | Couples     | New           | 30.29           | 58046        | 1758388  |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | CANADA | Shopify  | F2      | Middle Aged  | Families    | Existing      | 182.54          | 1336         | 243878   |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Shopify  | F3      | Retirees     | Families    | Existing      | 206.64          | 2514         | 519502   |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | ASIA   | Shopify  | F1      | Young Adults | Families    | Existing      | 172.11          | 2158         | 371417   |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Shopify  | F2      | Middle Aged  | Families    | New           | 155.84          | 318          | 49557    |
+| 2020-08-31T00:00:00.000Z | 35          | 08           | 2020          | AFRICA | Retail   | C3      | Retirees     | Couples     | New           | 35.02           | 111032       | 3888162  |
 
 ---
 
