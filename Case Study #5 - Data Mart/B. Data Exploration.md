@@ -365,3 +365,5 @@ ORDER BY calendar_year, platform;
 | 2020          | Shopify  | 174.87                    | 179.03                  |
 
 ---
+
+Check out the solutions for the next Section - [Before & After Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/C.%20Before%20%26%20After%20Analysis.md)
