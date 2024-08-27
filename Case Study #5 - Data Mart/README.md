@@ -55,10 +55,8 @@ Here are the first 10 rows:
 
 ## Case Study Questions
 
-A. Data Cleansing Steps
+A. [Data Cleansing Steps](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/A.%20Data%20Cleansing.md)
 
-B. Data Exploration
+B. [Data Exploration](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/B.%20Data%20Exploration.md)
 
-C. Before & After Analysis
-
-D. Bonus Question
+C. [Before & After Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%235%20-%20Data%20Mart/C.%20Before%20%26%20After%20Analysis.md)
