@@ -74,7 +74,7 @@ SELECT
   COUNT(DISTINCT visit_id) AS unique_visits
 FROM clique_bait.events
 GROUP BY month_visit, month_number
-ORDER BY month_number
+ORDER BY month_number;
 ```
 
 ### Answer
@@ -101,7 +101,7 @@ SELECT
 FROM clique_bait.events
 JOIN clique_bait.event_identifier USING(event_type)
 GROUP BY event_name
-ORDER BY event_count DESC
+ORDER BY event_count DESC;
 ```
 
 ### Answer
@@ -130,7 +130,7 @@ SELECT
   ,2) AS percentage_purchase
 FROM clique_bait.events
 JOIN clique_bait.event_identifier USING(event_type)
-WHERE event_name = 'Purchase'
+WHERE event_name = 'Purchase';
 ```
 
 ### Answer
@@ -142,3 +142,153 @@ WHERE event_name = 'Purchase'
 ---
 
 ## 6. What is the percentage of visits which view the checkout page but do not have a purchase event?
+
+* This percentage is calculated by counting the number of visits where the checkout page was viewed but there is not a purchase event, and dividing that by the total number of visits.
+* To count the first, we'll look at the events and hierarchy tables: note that what we want is to count visits where `page_id` 12 appears, but 13 doesn't.
+* In `visit`, we get the max value for `page_id` grouped by `visit_id`. The number of visits where the checkout page was viewed but not the purchase page is the number of rows where the max is 12 (checkout).
+* In the outer query, calculate the percentage.
+
+```sql
+WITH visit AS (
+  SELECT
+    visit_id,
+    MAX(page_id) AS max_page
+  FROM clique_bait.events
+  GROUP BY visit_id
+  ORDER BY visit_id
+)
+
+SELECT
+  ROUND(
+    COUNT(max_page)::numeric/
+    (SELECT COUNT(DISTINCT visit_id) FROM clique_bait.events)
+    *100
+  ,2) AS percentage_view_no_purchase
+FROM visit
+WHERE max_page = 12;
+```
+
+### Answer
+
+| percentage_view_no_purchase |
+| --------------------------- |
+| 9.15                        |
+
+---
+
+## 7. What are the top 3 pages by number of views?
+
+* Use **WHERE** to get only the views event.
+* Use **COUNT** and **GROUP BY** to calculate the number of views grouped by page.
+* Use **ORDER BY** and **LIMIT** to get the top 3.
+
+```sql
+SELECT
+  page_name,
+  COUNT(page_id) AS page_views
+FROM clique_bait.events
+JOIN clique_bait.page_hierarchy USING(page_id)
+WHERE event_type = 1
+GROUP BY page_name
+ORDER BY page_views DESC
+LIMIT 3;
+```
+
+### Answer
+
+| page_name    | page_views |
+| ------------ | ---------- |
+| All Products | 3174       |
+| Checkout     | 2103       |
+| Home Page    | 1782       |
+
+---
+
+## 8. What is the number of views and cart adds for each product category?
+
+* In `view_product`, calculate the number of views for each product category.
+* In `cart_product`, calculate the number of cart additions.
+* In the outer query, join both tables.
+ 
+```sql
+WITH view_product AS (
+  SELECT
+    product_category,
+    COUNT(page_name) AS view_count
+  FROM clique_bait.events
+  JOIN clique_bait.page_hierarchy USING(page_id)
+  WHERE event_type = 1
+  GROUP BY product_category
+),
+
+cart_product AS (
+  SELECT
+    product_category,
+    COUNT(page_name) AS cart_count
+  FROM clique_bait.events
+  JOIN clique_bait.page_hierarchy USING(page_id)
+  WHERE event_type = 2
+  GROUP BY product_category
+)
+
+SELECT
+  product_category,
+  view_count,
+  cart_count
+FROM view_product
+JOIN cart_product USING(product_category)
+ORDER BY product_category;
+```
+
+### Answer
+
+| product_category | view_count | cart_count |
+| ---------------- | ---------- | ---------- |
+| Fish             | 4633       | 2789       |
+| Luxury           | 3032       | 1870       |
+| Shellfish        | 6204       | 3792       |
+
+---
+
+## 9. What are the top 3 products by purchases?
+
+* In `purchase_cte`, get all `visit_id`'s where purchases are made.
+* In the outer query, use **WHERE** to get rows where purchases are made and **SELECT** the page name when the product is added to the cart.
+* Use **COUNT** and **GROUP BY** to count the number of purchases by product.
+* Use **ORDER BY** and **LIMIT** to get the top 3.
+
+```sql
+WITH purchases_cte AS (
+  SELECT 
+    DISTINCT visit_id
+  FROM clique_bait.events
+  WHERE page_id = 13 
+)
+
+SELECT 
+  page_name,
+  COUNT(
+    CASE
+      WHEN event_type = 2 THEN visit_id
+      ELSE 0
+    END
+  ) AS purchase_count
+FROM clique_bait.events
+JOIN clique_bait.page_hierarchy USING(page_id)
+WHERE visit_id IN (SELECT * FROM purchases_cte) AND event_type = 2
+GROUP BY page_name
+ORDER BY purchase_count DESC
+LIMIT 3;
+```
+
+### Answer
+
+| page_name | purchase_count |
+| --------- | -------------- |
+| Lobster   | 754            |
+| Oyster    | 726            |
+| Crab      | 719            |
+
+---
+
+Check out the solutions for the next section [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/B.%20Product%20Funnel%20Analysis.md)
