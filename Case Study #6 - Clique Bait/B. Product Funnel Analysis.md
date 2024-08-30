@@ -228,3 +228,5 @@ FROM clique_bait.product_info;
 | 75.93                 |
 
 ---
+
+Check out the solution for the next section [here](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/C.%20Campaigns%20Analysis.md)
