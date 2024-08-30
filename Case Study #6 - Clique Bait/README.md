@@ -108,8 +108,9 @@ Blanks are null values.
 
 ## Case study questions
 
-1. Enterprise Relationship Diagram
-2. Digital Analysis
-3. Product Funnel Analysis
-4. Campaigns Analysis
+A. [Digital Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/A.%20Digital%20Analysis.md)
+
+B. [Product Funnel Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/B.%20Product%20Funnel%20Analysis.md)
+
+C. [Campaigns Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/C.%20Campaigns%20Analysis.md)
       
