@@ -103,10 +103,9 @@ These tables are used only for the bonus question where we will use them to recr
 
 ## Case Study Questions
 
-A. High Level Sales Analysis
+A. [High Level Sales Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%237%20-%20Balanced%20Tree%20Clothing%20Co./A.%20High%20Level%20Sales%20Analysis.md)
 
-B. Transaction Analysis
+B. [Transaction Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%237%20-%20Balanced%20Tree%20Clothing%20Co./B.%20Transaction%20Analysis.md)
 
-C. Product Analysis
+C. [Product Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%237%20-%20Balanced%20Tree%20Clothing%20Co./C.%20Product%20Analysis.md)
 
-D. Reporting Challenge
