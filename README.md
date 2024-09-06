@@ -21,3 +21,5 @@ A special thanks to Danny Ma for creating this incredible challenge.
 [Case Study #6](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%236%20-%20Clique%20Bait/README.md) - Clique Bait 🎣
 
 [Case Study #7](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%237%20-%20Balanced%20Tree%20Clothing%20Co./README.md) - Balanced Tree Clothing Co. 🌲
+
+[Case Study #8](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%238%20-%20Fresh%20Segments/README.md) - Fresh Segments 🍊
