@@ -73,9 +73,9 @@ This mapping table links the `interest_id` with their relevant interest informat
 
 ## Case Study Questions
 
-A. Data Exploration and Cleansing
+A. [Data Exploration and Cleansing](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%238%20-%20Fresh%20Segments/A.%20Data%20Exploration%20and%20Cleansing.md)
 
-B. Interest Analysis
+B. [Interest Analysis](https://github.com/rodrigueslara/8-week-sql-challenge/blob/main/Case%20Study%20%238%20-%20Fresh%20Segments/B.%20Interest%20Analysis.md)
 
 C. Segment Analysis
 
